@@ -21,8 +21,6 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
         slot = prevRecId.slot + 1;
     }
 
-    /*RelCatEntry relCatBuf;
-    RelCacheTable::getRelCatEntry(relId, &relCatBuf);*/
     while(block != -1) {
         RecBuffer buffer(block);
         Attribute bufRecord[RELCAT_NO_ATTRS];
@@ -34,7 +32,7 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
         unsigned char slotMap[bufHead.numSlots];
         buffer.getSlotMap(slotMap);
 
-/**/    if(slot >= bufHead.numSlots) {
+    if(slot >= bufHead.numSlots) {
             block = bufHead.rblock;
             slot = 0;
             continue;
