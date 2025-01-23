@@ -24,7 +24,6 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
     while(block != -1) {
         RecBuffer buffer(block);
         Attribute bufRecord[RELCAT_NO_ATTRS];
-        buffer.getRecord(bufRecord, slot);
 
         struct HeadInfo bufHead;
         buffer.getHeader(&bufHead);
@@ -32,7 +31,7 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
         unsigned char slotMap[bufHead.numSlots];
         buffer.getSlotMap(slotMap);
 
-    if(slot >= bufHead.numSlots) {
+        if(slot >= bufHead.numSlots) {
             block = bufHead.rblock;
             slot = 0;
             continue;
