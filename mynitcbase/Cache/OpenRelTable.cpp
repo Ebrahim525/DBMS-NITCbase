@@ -3,6 +3,8 @@
 #include <cstring>
 #include <stdlib.h>
 
+OpenRelTableMetaInfo OpenRelTable::tableMetaInfo[MAX_OPEN];
+
 AttrCacheEntry *createlist(int attrSize){
   
   AttrCacheEntry *head = (AttrCacheEntry*)malloc(sizeof(AttrCacheEntry));
@@ -24,8 +26,9 @@ OpenRelTable::OpenRelTable() {
     for (int i=0; i<MAX_OPEN; i++) {
         RelCacheTable::relCache[i] = nullptr;
         AttrCacheTable::attrCache[i] = nullptr;
+        tableMetaInfo[i].free = true;
     }
-
+     /************ Setting up RelCache ************/
     RecBuffer relCatBlock(RELCAT_BLOCK);
     Attribute relCatRecord[RELCAT_NO_ATTRS];
 
@@ -44,7 +47,7 @@ OpenRelTable::OpenRelTable() {
       *(RelCacheTable::relCache[i]) = relCacheEntry;
     }
 
-
+     /************ Setting up AttrCache ************/
     RecBuffer attrCatBlock(ATTRCAT_BLOCK);
     Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
     int slotNo = 0;
@@ -70,12 +73,23 @@ OpenRelTable::OpenRelTable() {
       AttrCacheTable::attrCache[i] = (struct AttrCacheEntry*)malloc(sizeof(AttrCacheEntry));
       AttrCacheTable::attrCache[i] = head;
     }
+
+     /************ Setting up tableMetaInfo entries ************/
+    tableMetaInfo[RELCAT_RELID].free = false;
+    tableMetaInfo[ATTRCAT_RELID].free = false;
+    strcpy(tableMetaInfo[RELCAT_RELID].relName, RELCAT_RELNAME);
+    strcpy(tableMetaInfo[ATTRCAT_RELID].relName, ATTRCAT_RELNAME);
 }
 
 OpenRelTable::~OpenRelTable() {
 
+  for(int i=2; i<MAX_OPEN; i++) {
+    if(!tableMetaInfo[i].free) {
+      OpenRelTable::closeRel(i);
+    }
+  }
+  //Freeing all the memory allocated in OpenRelTable()
   for (int i=0; i<MAX_OPEN; i++) {
-    
     free(RelCacheTable::relCache[i]);
     AttrCacheEntry *head = AttrCacheTable::attrCache[i];
     AttrCacheEntry *x;
@@ -88,17 +102,19 @@ OpenRelTable::~OpenRelTable() {
 }
 
 int OpenRelTable::getRelId(char relName[ATTR_SIZE]) {
-  if(strcmp(relName, RELCAT_RELNAME) == 0) {
-    return RELCAT_RELID;
+  for(int i=0; i<MAX_OPEN; i++) {
+    if(strcmp(tableMetaInfo[i].relName, relName) == 0) {
+      return i;
+    }
   }
-
-  if(strcmp(relName, ATTRCAT_RELNAME) == 0) {
-    return ATTRCAT_RELID;
-  }
-
-  if(strcmp(relName, "Students") == 0) {
-    return 2;
-  }
-
   return E_RELNOTOPEN;
+}
+
+int OpenRelTable::getFreeOpenRelTableEntry() {
+  for(int i=2; i<MAX_OPEN; i++) {
+    if(tableMetaInfo[i].free = true) {
+      return i;
+    }
+  }
+  return E_CACHEFULL;
 }
