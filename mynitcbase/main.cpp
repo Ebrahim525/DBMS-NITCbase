@@ -48,8 +48,8 @@ void stage2() {
   {
     Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
     attrCatBuffer.getRecord(attrCatRecord, i);
-    if(strcmp(attrCatRecord[ATTRCAT_REL_NAME_INDEX].sVal, "Students")==0 && strcmp(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, "RollNumber") == 0){
-      strcpy(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, "RegNO");
+    if(strcmp(attrCatRecord[ATTRCAT_REL_NAME_INDEX].sVal, "Students")==0 && strcmp(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, "Class") == 0){
+      strcpy(attrCatRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, "Batch");
       attrCatBuffer.setRecord(attrCatRecord, i);
       break;
     }
@@ -110,6 +110,5 @@ int main(int argc, char *argv[]) {
   Disk disk_run;
   StaticBuffer buffer;
   OpenRelTable cache;
-
   return FrontendInterface::handleFrontend(argc, argv);
 }
