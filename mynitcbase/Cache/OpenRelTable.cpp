@@ -91,7 +91,7 @@ OpenRelTable::~OpenRelTable() {
   }
   //Freeing all the memory allocated in OpenRelTable()
   for (int i=0; i<MAX_OPEN; i++) {
-    free(RelCacheTable::relCache[i]);
+    RelCacheTable::relCache[i] = nullptr;
     AttrCacheEntry *head = AttrCacheTable::attrCache[i];
     AttrCacheEntry *x;
     while(head != nullptr){
@@ -99,6 +99,7 @@ OpenRelTable::~OpenRelTable() {
       head = head->next;
       free(x);
     }
+    AttrCacheTable::attrCache[i] = nullptr;
   }
 }
 
@@ -123,7 +124,7 @@ int OpenRelTable::getFreeOpenRelTableEntry() {
 int OpenRelTable::openRel(char relName[ATTR_SIZE]) {
 
   int relId = OpenRelTable::getRelId(relName);
-  if(relId != E_RELNOTOPEN) {
+  if(relId >=0 && relId <12) {
     return relId;
   }
 
@@ -135,9 +136,9 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE]) {
   RelCacheTable::resetSearchIndex(RELCAT_RELID);
   Attribute attrVal;
   strcpy(attrVal.sVal, relName);
-  char relcatattrrelname[16];
-  strcpy(relcatattrrelname, RELCAT_ATTR_RELNAME);
-  RecId relcatRecId = BlockAccess::linearSearch(RELCAT_RELID, relcatattrrelname, attrVal, EQ);
+  char relname[16];
+  strcpy(relname, RELCAT_ATTR_RELNAME);
+  RecId relcatRecId = BlockAccess::linearSearch(RELCAT_RELID, relname, attrVal, EQ);
 
   if(relcatRecId.block == -1 && relcatRecId.slot == -1) {
     return E_RELNOTEXIST;
@@ -158,22 +159,22 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE]) {
 
   AttrCacheEntry *listHead;
   listHead = createlist(relCacheEntry->relCatEntry.numAttrs);
-  AttrCacheEntry *attrCacheEntry = listHead;
+  AttrCacheEntry *x = listHead;
   RelCacheTable::resetSearchIndex(ATTRCAT_RELID);
   Attribute recordAttr[ATTRCAT_NO_ATTRS];
   
 
   for(int i=0; i<relCacheEntry->relCatEntry.numAttrs; i++) {
-    RecId attrcatRecId = BlockAccess::linearSearch(ATTRCAT_RELID, relcatattrrelname, attrVal, EQ);
+    RecId attrcatRecId = BlockAccess::linearSearch(ATTRCAT_RELID, relname, attrVal, EQ);
 
     RecBuffer attrBuf(attrcatRecId.block);
     attrBuf.getRecord(recordAttr, attrcatRecId.slot);
-    AttrCacheTable::recordToAttrCatEntry(recordAttr, &(attrCacheEntry->attrCatEntry));
+    AttrCacheTable::recordToAttrCatEntry(recordAttr, &(x->attrCatEntry));
 
-    attrCacheEntry->recId.block = attrcatRecId.block;
-		attrCacheEntry->recId.slot = attrcatRecId.slot;
+    x->recId.block = attrcatRecId.block;
+		x->recId.slot = attrcatRecId.slot;
 
-		attrCacheEntry = attrCacheEntry->next;
+		x = x->next;
   }
 
   AttrCacheTable::attrCache[relId] = listHead;
