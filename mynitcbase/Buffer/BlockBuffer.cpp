@@ -54,40 +54,22 @@ int RecBuffer::getRecord(union Attribute *rec, int slotNum) {
   return SUCCESS;
 }
 
-
-int RecBuffer::setRecord(union Attribute *rec, int slotNum) {
-
-  struct HeadInfo head;
-  this->getHeader(&head);
-
-  int attrCount = head.numAttrs;
-  int slotCount = head.numSlots;
-
-  unsigned char buffer[BLOCK_SIZE];
-
-  Disk::readBlock(buffer, this->blockNum);
-
-  int recordSize = attrCount * ATTR_SIZE;
-  unsigned char *slotPointer = buffer + (32 + slotCount + (recordSize * slotNum));
-
-  memcpy(slotPointer, rec, recordSize);
-
-  Disk::writeBlock(buffer, this->blockNum);
-
-  return SUCCESS;
-}
-
 int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr) {
 
   int bufferNum = StaticBuffer::getBufferNum(this->blockNum);
 
-  if (bufferNum == E_BLOCKNOTINBUFFER) {
-    bufferNum = StaticBuffer::getFreeBuffer(this->blockNum);
+  if(bufferNum != E_BLOCKNOTINBUFFER) {
 
-    if(bufferNum == E_OUTOFBOUND) {
-      return E_OUTOFBOUND;
+    for(int i=0; i<BUFFER_CAPACITY; i++) {
+      StaticBuffer::metainfo[i].timeStamp++;
     }
-
+    StaticBuffer::metainfo[bufferNum].timeStamp = 0;
+  }
+  else {
+    bufferNum = StaticBuffer::getFreeBuffer(this->blockNum);
+    if(bufferNum == E_OUTOFBOUND) {
+      return bufferNum;
+    }
     Disk::readBlock(StaticBuffer::blocks[bufferNum], this->blockNum);
   }
 
@@ -95,6 +77,34 @@ int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr) {
 
   return SUCCESS;
 }
+
+int RecBuffer::setRecord(union Attribute *rec, int slotNum) {
+
+  unsigned char *bufferPtr;
+  int ret = loadBlockAndGetBufferPtr(&bufferPtr);
+  if(ret != SUCCESS) {
+    return ret;
+  }
+
+  struct HeadInfo head;
+  this->getHeader(&head);
+  int numOfAttrs = head.numAttrs;
+  int numOfSlots = head.numSlots;
+
+  if(slotNum < 0 || slotNum >=numOfSlots) {
+    return E_OUTOFBOUND;
+  }
+
+  int recordSize = numOfAttrs * ATTR_SIZE;
+  unsigned char *slotPointer = bufferPtr + (32 + numOfSlots + (recordSize * slotNum));
+
+   memcpy(slotPointer, rec, recordSize);
+
+   ret = StaticBuffer::setDirtyBit(this->blockNum);
+
+   return SUCCESS;
+}
+
 
 RecBuffer::RecBuffer(int blockNum) : BlockBuffer::BlockBuffer(blockNum) {
 
