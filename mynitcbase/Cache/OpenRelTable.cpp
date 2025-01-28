@@ -34,7 +34,7 @@ OpenRelTable::OpenRelTable() {
     RecBuffer relCatBlock(RELCAT_BLOCK);
     Attribute relCatRecord[RELCAT_NO_ATTRS];
 
-    for (int i=0; i<3; i++) {
+    for (int i=0; i<2; i++) {
       //relID=i
 
       relCatBlock.getRecord(relCatRecord, i);
@@ -53,7 +53,7 @@ OpenRelTable::OpenRelTable() {
     Attribute attrCatRecord[ATTRCAT_NO_ATTRS];
     int slotNo = 0;
 
-    for (int i=0; i<3; i++) {
+    for (int i=0; i<2; i++) {
       //relId=i
 
       int numOfAttr = RelCacheTable::relCache[i]->relCatEntry.numAttrs;

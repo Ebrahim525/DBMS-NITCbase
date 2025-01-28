@@ -22,6 +22,9 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
         block = prevRecId.block;
         slot = prevRecId.slot + 1;
     }
+    AttrCatEntry attrCatBuf;
+    AttrCacheTable::getAttrCatEntry(relId, attrName, &attrCatBuf);
+    int offset=attrCatBuf.offset;
 
     while(block != -1) {
         RecBuffer buffer(block);
@@ -44,12 +47,11 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
             continue;
         }
         
-        AttrCatEntry attrCatBuf;
+        /*AttrCatEntry attrCatBuf;
         AttrCacheTable::getAttrCatEntry(relId, attrName, &attrCatBuf);
-
+        int offset=attrCatBuf.offset;*/
         Attribute record[bufHead.numAttrs];
         buffer.getRecord(record, slot);
-        int offset=attrCatBuf.offset;
 
         int cmpVal = compareAttrs(record[offset], attrVal, attrCatBuf.attrType);
 
@@ -120,7 +122,7 @@ int BlockAccess::renameAttribute(char *relName, char *oldName, char *newName) {
     strcpy(relNamee, RELCAT_ATTR_RELNAME); 
     RecId search = BlockAccess::linearSearch(RELCAT_RELID, relNamee, relNameAttr, EQ);
     if(search.block == -1 && search.slot == -1) {
-        return E_RELEXIST;
+        return E_RELNOTEXIST;
     }
 
     RelCacheTable::resetSearchIndex(ATTRCAT_RELID);
