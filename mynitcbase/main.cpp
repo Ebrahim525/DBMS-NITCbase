@@ -6,7 +6,6 @@
 #include "Disk_Class/Disk.h"
 #include "FrontendInterface/FrontendInterface.h"
 #include "define/constants.h"
-
 #include <stdlib.h>
 
 void stage1() {
