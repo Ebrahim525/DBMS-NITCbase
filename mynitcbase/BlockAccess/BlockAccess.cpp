@@ -28,7 +28,7 @@ RecId BlockAccess::linearSearch(int relId, char *attrName, Attribute attrVal, in
 
     while(block != -1) {
         RecBuffer buffer(block);
-        Attribute bufRecord[RELCAT_NO_ATTRS];
+        //Attribute bufRecord[RELCAT_NO_ATTRS];
 
         struct HeadInfo bufHead;
         buffer.getHeader(&bufHead);
