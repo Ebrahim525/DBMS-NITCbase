@@ -134,12 +134,13 @@ int BlockAccess::renameAttribute(char *relName, char *oldName, char *newName) {
         RecBuffer attrCatBuf(search.block);
         attrCatBuf.getRecord(attrCatEntryRecord, search.slot);
 
+        if(strcmp(attrCatEntryRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, newName) == 0) {
+            return E_ATTREXIST;
+        }
+        
         if(strcmp(attrCatEntryRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, oldName) == 0) {
             attrToRenameRecId = search;
             break;
-        }
-        if(strcmp(attrCatEntryRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, newName) == 0) {
-            return E_ATTREXIST;
         }
     }
 
