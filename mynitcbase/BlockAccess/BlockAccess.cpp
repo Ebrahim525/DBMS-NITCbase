@@ -88,7 +88,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
         return E_RELNOTEXIST;
     }
 
-    RecBuffer CatBuffer(search.block); //Relcat or search.block??
+    RecBuffer CatBuffer(search.block);
     Attribute CatRecord[RELCAT_NO_ATTRS];
     CatBuffer.getRecord(CatRecord, search.slot);
     strcpy(CatRecord[RELCAT_REL_NAME_INDEX].sVal, newName);
