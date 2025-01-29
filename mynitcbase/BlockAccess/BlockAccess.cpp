@@ -142,7 +142,6 @@ int BlockAccess::renameAttribute(char *relName, char *oldName, char *newName) {
         
         if(strcmp(attrCatEntryRecord[ATTRCAT_ATTR_NAME_INDEX].sVal, oldName) == 0) {
             attrToRenameRecId = search;
-            break;
         }
         
     }
