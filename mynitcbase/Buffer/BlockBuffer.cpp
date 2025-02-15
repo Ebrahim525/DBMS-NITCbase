@@ -122,11 +122,6 @@ int RecBuffer::setRecord(union Attribute *rec, int slotNum) {
    return SUCCESS;
 }
 
-
-RecBuffer::RecBuffer(int blockNum) : BlockBuffer::BlockBuffer(blockNum) {}
-
-RecBuffer::RecBuffer() : BlockBuffer('R'){}
-
 int RecBuffer::getSlotMap(unsigned char *slotMap) {
   unsigned char *bufferPtr;
 
