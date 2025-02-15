@@ -1,10 +1,7 @@
 #include "BlockBuffer.h"
-
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-
-unsigned char StaticBuffer::blockAllocMap[DISK_BLOCKS];
 
 
 BlockBuffer::BlockBuffer(int blockNum) {

@@ -159,14 +159,14 @@ int BlockAccess::renameAttribute(char *relName, char *oldName, char *newName) {
 }
 
 int BlockAccess::insert(int relId, Attribute *record) {
-    RelCatEntry *relCatEntry;
-    int ret = RelCacheTable::getRelCatEntry(relId, relCatEntry);
+    RelCatEntry relCatEntry;
+    RelCacheTable::getRelCatEntry(relId, &relCatEntry);
 
-    int blockNum = relCatEntry->firstBlk;
+    int blockNum = relCatEntry.firstBlk;
     RecId recId = {-1, -1};
 
-    int numOfSlots = relCatEntry->numSlotsPerBlk;
-    int numOfAttrs = relCatEntry->numAttrs;
+    int numOfSlots = relCatEntry.numSlotsPerBlk;
+    int numOfAttrs = relCatEntry.numAttrs;
 
     int prevBlockNum = -1;
 
@@ -200,7 +200,7 @@ int BlockAccess::insert(int relId, Attribute *record) {
         }
 
         RecBuffer recBuf;
-        ret = recBuf.getBlockNum();
+        int ret = recBuf.getBlockNum();
         if(ret == E_DISKFULL) {
             return ret;
         }
@@ -233,15 +233,15 @@ int BlockAccess::insert(int relId, Attribute *record) {
             prevBuf.setHeader(&prevHead);
         }
         else {
-            relCatEntry->firstBlk = recId.block;
+            relCatEntry.firstBlk = recId.block;
             //RelCacheTable::setRelCatEntry(relId, relCatEntry);
         }
-        relCatEntry->lastBlk = recId.block;
-        RelCacheTable::setRelCatEntry(relId, relCatEntry);
+        relCatEntry.lastBlk = recId.block;
+        RelCacheTable::setRelCatEntry(relId, &relCatEntry);
     }
 
     RecBuffer recBuf(recId.block);
-    ret = recBuf.setRecord(record, recId.slot);
+    recBuf.setRecord(record, recId.slot);
 
     unsigned char *slotMap = (unsigned char *)malloc(sizeof(unsigned char)*numOfSlots);
     recBuf.getSlotMap(slotMap);
@@ -253,8 +253,8 @@ int BlockAccess::insert(int relId, Attribute *record) {
     head.numEntries++;
     recBuf.setHeader(&head);
 
-    relCatEntry->numRecs++;
-    RelCacheTable::setRelCatEntry(relId, relCatEntry);
+    relCatEntry.numRecs++;
+    RelCacheTable::setRelCatEntry(relId, &relCatEntry);
 
     return SUCCESS;
 }

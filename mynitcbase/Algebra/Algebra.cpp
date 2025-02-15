@@ -79,7 +79,7 @@ int Algebra::select(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], char attr
 }
 
 int Algebra::insert(char relName[ATTR_SIZE], int nAttrs, char record[][ATTR_SIZE]) {
-    if(strcpy(relName, RELCAT_RELNAME) == 0 || strcpy(relName, ATTRCAT_RELNAME) == 0) {
+    if(strcmp(relName, RELCAT_RELNAME) == 0 || strcmp(relName, ATTRCAT_RELNAME) == 0) {
         return E_NOTPERMITTED;
     }
 
@@ -88,19 +88,19 @@ int Algebra::insert(char relName[ATTR_SIZE], int nAttrs, char record[][ATTR_SIZE
         return relId;
     }
 
-    RelCatEntry *relCatEntry;
-    int ret = RelCacheTable::getRelCatEntry(relId, relCatEntry);
+    RelCatEntry relCatEntry;
+    RelCacheTable::getRelCatEntry(relId, &relCatEntry);
     
-    if(relCatEntry->numAttrs != nAttrs){
+    if(relCatEntry.numAttrs != nAttrs){
         return E_NATTRMISMATCH;
     }
 
     Attribute recordValues[nAttrs];
-    AttrCatEntry *attrCatEntry;
+    AttrCatEntry attrCatEntry;
     for(int i=0; i<nAttrs; i++) {
-        ret = AttrCacheTable::getAttrCatEntry(relId, i, attrCatEntry);
+        AttrCacheTable::getAttrCatEntry(relId, i, &attrCatEntry);
 
-        int type = attrCatEntry->attrType;
+        int type = attrCatEntry.attrType;
         if(type == NUMBER) {
             if (isNumber(record[i])) {
                 recordValues[i].nVal = atof(record[i]);
