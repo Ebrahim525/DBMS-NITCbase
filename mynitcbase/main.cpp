@@ -34,5 +34,7 @@ int main(int argc, char *argv[]) {
   Disk disk_run;
   StaticBuffer buffer;
 
+  stage3();
+
   return 0;
 }
