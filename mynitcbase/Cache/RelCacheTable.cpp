@@ -86,7 +86,7 @@ int RelCacheTable::setRelCatEntry(int relId, RelCatEntry *relCatBuf) {
     RelCacheEntry *relCacheBuf;
     relCacheBuf->relCatEntry = *relCatBuf;  
     relCache[relId] = relCacheBuf;
-    relCache[relId]->dirty = 1;
+    relCache[relId]->dirty = true;
 
     return SUCCESS;
 }

@@ -37,14 +37,6 @@ StaticBuffer::StaticBuffer() {
 }
 
 StaticBuffer::~StaticBuffer() {
-<<<<<<< Updated upstream
-    int k = 0;
-    unsigned char buffer[BLOCK_SIZE];
-    for(int i=0; i<4; i++) {
-        for(int j=0; j<BLOCK_SIZE; j++) {
-            buffer[j] = StaticBuffer::blockAllocMap[k];
-            k++;
-=======
 
     unsigned char buffer[BLOCK_SIZE];
 
@@ -53,7 +45,6 @@ StaticBuffer::~StaticBuffer() {
         for(int j=0; j<BLOCK_SIZE; j++) {
             buffer[j] = StaticBuffer::blockAllocMap[slot];
             slot++;
->>>>>>> Stashed changes
         }
 
         Disk::writeBlock(buffer, i);

@@ -188,7 +188,7 @@ int BlockBuffer::setBlockType(int blockType) {
 int BlockBuffer::getFreeBlock(int blockType) {
   int blockNum=-1;
   for(int i=0; i<DISK_BLOCKS; i++) {
-    if(StaticBuffer::blockAllocMap[i] == 3) {
+    if(StaticBuffer::blockAllocMap[i] == UNUSED_BLK) {
       blockNum = i;
       break;
     }
@@ -199,6 +199,9 @@ int BlockBuffer::getFreeBlock(int blockType) {
   this->blockNum = blockNum;
 
   int bufferNum = StaticBuffer::getFreeBuffer(blockNum);
+  if(bufferNum < 0 || bufferNum >= BUFFER_CAPACITY) {
+    return bufferNum;
+  }
 
   struct HeadInfo head;
   head.pblock = -1;

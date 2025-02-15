@@ -211,7 +211,7 @@ int BlockAccess::insert(int relId, Attribute *record) {
         struct HeadInfo head;
         head.blockType = REC;
         head.pblock = -1;
-        head.lblock = -1;/**/
+        head.lblock = prevBlockNum;/**/
         head.rblock = -1;
         head.numEntries = 0;
         head.numSlots = numOfSlots;
@@ -241,7 +241,7 @@ int BlockAccess::insert(int relId, Attribute *record) {
     }
 
     RecBuffer recBuf(recId.block);
-    recBuf.setRecord(record, recId.slot);
+    ret = recBuf.setRecord(record, recId.slot);
 
     unsigned char *slotMap = (unsigned char *)malloc(sizeof(unsigned char)*numOfSlots);
     recBuf.getSlotMap(slotMap);

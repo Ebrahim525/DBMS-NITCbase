@@ -89,7 +89,7 @@ int Algebra::insert(char relName[ATTR_SIZE], int nAttrs, char record[][ATTR_SIZE
     }
 
     RelCatEntry *relCatEntry;
-    /**/int ret = RelCacheTable::getRelCatEntry(relId, relCatEntry);
+    int ret = RelCacheTable::getRelCatEntry(relId, relCatEntry);
     
     if(relCatEntry->numAttrs != nAttrs){
         return E_NATTRMISMATCH;

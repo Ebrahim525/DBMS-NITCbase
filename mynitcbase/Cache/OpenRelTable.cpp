@@ -206,7 +206,7 @@ int OpenRelTable::closeRel(int relId) {
     relCatBlock.setRecord(record, RelCacheTable::relCache[relId]->recId.slot);
   }
 
-  
+  free(RelCacheTable::relCache[relId]);
 
   tableMetaInfo[relId].free = true;
   RelCacheTable::relCache[relId] = nullptr;
@@ -218,6 +218,7 @@ int OpenRelTable::closeRel(int relId) {
     free(x);
   }
   AttrCacheTable::attrCache[relId] = nullptr;
+  RelCacheTable::relCache[relId] = nullptr;
 
   return SUCCESS;
 }
