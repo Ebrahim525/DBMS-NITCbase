@@ -90,7 +90,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
         return E_RELNOTEXIST;
     }
 
-    RecBuffer CatBuffer(search.block); //Relcat or search.block??
+    RecBuffer CatBuffer(search.block);
     Attribute CatRecord[RELCAT_NO_ATTRS];
     CatBuffer.getRecord(CatRecord, search.slot);
     strcpy(CatRecord[RELCAT_REL_NAME_INDEX].sVal, newName);
@@ -176,7 +176,7 @@ int BlockAccess::insert(int relId, Attribute *record) {
         struct HeadInfo head;
         recBuffer.getHeader(&head);
 
-        unsigned char *slotMap = (unsigned char *)malloc(sizeof(unsigned char)*numOfSlots);/**/
+        unsigned char *slotMap = (unsigned char *)malloc(sizeof(unsigned char)*numOfSlots);
         recBuffer.getSlotMap(slotMap);
 
         int i=0;
@@ -187,11 +187,12 @@ int BlockAccess::insert(int relId, Attribute *record) {
                 break;
             }
         }
-
-        if(i == numOfSlots) {
-            prevBlockNum = blockNum;
-            blockNum = head.rblock; 
+        if(i != numOfSlots) {
+            break;
         }
+
+        prevBlockNum = blockNum;
+        blockNum = head.rblock; 
     }
 
     if(recId.block == -1 || recId.slot == -1) {

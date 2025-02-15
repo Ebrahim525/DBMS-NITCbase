@@ -151,13 +151,13 @@ int BlockBuffer::setHeader(struct HeadInfo *head) {
   }
 
   struct HeadInfo *bufferHeader = (struct HeadInfo *)bufferPtr;
-  bufferHeader->blockType, head->blockType;
-  bufferHeader->pblock, head->pblock;
-  bufferHeader->lblock, head->lblock;
-  bufferHeader->rblock, head->rblock;
-  bufferHeader->numEntries, head->numEntries;
-  bufferHeader->numAttrs, head->numAttrs;
-  bufferHeader->numSlots, head->numSlots;
+  bufferHeader->blockType = head->blockType;
+  bufferHeader->pblock = head->pblock;
+  bufferHeader->lblock = head->lblock;
+  bufferHeader->rblock = head->rblock;
+  bufferHeader->numEntries = head->numEntries;
+  bufferHeader->numAttrs = head->numAttrs;
+  bufferHeader->numSlots = head->numSlots;
 
   ret = StaticBuffer::setDirtyBit(this->blockNum);
   return ret;
