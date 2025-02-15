@@ -122,14 +122,11 @@ int RecBuffer::setRecord(union Attribute *rec, int slotNum) {
    return SUCCESS;
 }
 
-<<<<<<< Updated upstream
 
 RecBuffer::RecBuffer(int blockNum) : BlockBuffer::BlockBuffer(blockNum) {}
 
 RecBuffer::RecBuffer() : BlockBuffer('R'){}
 
-=======
->>>>>>> Stashed changes
 int RecBuffer::getSlotMap(unsigned char *slotMap) {
   unsigned char *bufferPtr;
 
@@ -151,13 +148,7 @@ int RecBuffer::getSlotMap(unsigned char *slotMap) {
 }
 
 int compareAttrs(union Attribute attr1, union Attribute attr2, int attrType) {
-<<<<<<< Updated upstream
   return attrType == NUMBER ? (attr1.nVal < attr2.nVal ? -1 : (attr1.nVal > attr2.nVal ? 1 : 0)) : strcmp(attr1.sVal, attr2.sVal) ;
-=======
-  return attrType == NUMBER ? 
-		(attr1.nVal < attr2.nVal ? -1 : (attr1.nVal > attr2.nVal ? 1 : 0)) : 
-		strcmp(attr1.sVal, attr2.sVal) ;
->>>>>>> Stashed changes
 }
 
 int BlockBuffer::setHeader(struct HeadInfo *head) {
@@ -168,18 +159,6 @@ int BlockBuffer::setHeader(struct HeadInfo *head) {
   }
 
   struct HeadInfo *bufferHeader = (struct HeadInfo *)bufferPtr;
-<<<<<<< Updated upstream
-  bufferHeader->numSlots = head->numSlots;
-  bufferHeader->lblock = head->lblock;
-  bufferHeader->numEntries = head->numEntries;
-  bufferHeader->pblock = head->pblock;
-  bufferHeader->rblock = head->rblock;
-  bufferHeader->blockType = head->blockType;
-  bufferHeader->numAttrs=head->numAttrs;
-
-  ret = StaticBuffer::setDirtyBit(this->blockNum);
-
-=======
   bufferHeader->blockType, head->blockType;
   bufferHeader->pblock, head->pblock;
   bufferHeader->lblock, head->lblock;
@@ -189,7 +168,6 @@ int BlockBuffer::setHeader(struct HeadInfo *head) {
   bufferHeader->numSlots, head->numSlots;
 
   ret = StaticBuffer::setDirtyBit(this->blockNum);
->>>>>>> Stashed changes
   return ret;
 }
 
@@ -201,35 +179,13 @@ int BlockBuffer::setBlockType(int blockType) {
   }
 
   *((int32_t *)bufferPtr) = blockType;
-<<<<<<< Updated upstream
-  StaticBuffer::blockAllocMap[this->blockNum] = blockType;
-
-  ret = StaticBuffer::setDirtyBit(this->blockNum);
-
-=======
 
   StaticBuffer::blockAllocMap[this->blockNum] = blockType;
   ret = StaticBuffer::setDirtyBit(this->blockNum);
->>>>>>> Stashed changes
   return ret;
 }
 
 int BlockBuffer::getFreeBlock(int blockType) {
-<<<<<<< Updated upstream
-  int i = 0;
-  for(i; i<DISK_BLOCKS; i++) {
-    if(StaticBuffer::blockAllocMap[i] == FREE) {
-      break;
-    }
-  }
-
-  if(i == DISK_BLOCKS) {
-    return E_DISKFULL;
-  }
-
-  this->blockNum = i;
-  StaticBuffer::getFreeBuffer(this->blockNum);
-=======
   int blockNum=-1;
   for(int i=0; i<DISK_BLOCKS; i++) {
     if(StaticBuffer::blockAllocMap[i] == 3) {
@@ -243,7 +199,6 @@ int BlockBuffer::getFreeBlock(int blockType) {
   this->blockNum = blockNum;
 
   int bufferNum = StaticBuffer::getFreeBuffer(blockNum);
->>>>>>> Stashed changes
 
   struct HeadInfo head;
   head.pblock = -1;
@@ -253,32 +208,6 @@ int BlockBuffer::getFreeBlock(int blockType) {
   head.numAttrs = 0;
   head.numSlots = 0;
   int ret = BlockBuffer::setHeader(&head);
-<<<<<<< Updated upstream
-
-  BlockBuffer::setBlockType(blockType);
-
-  return this->blockNum;
-}
-
-BlockBuffer::BlockBuffer(char blockType) {
-  int type = blockType == 'R' ? REC : UNUSED_BLK;
-  if (blockType == 'R') {
-		blockNum = getFreeBlock(REC);
-	}
-	else if (blockType == 'L') {
-		blockNum = getFreeBlock(IND_LEAF);
-	}
-	else if (blockType == 'I') {
-		blockNum = getFreeBlock(IND_INTERNAL);
-	}
-  else{
-    blockNum = getFreeBlock(UNUSED_BLK);
-  }
-
-  if(blockNum >= 0 || blockNum < DISK_BLOCKS) {
-    this->blockNum = blockNum;
-  }
-=======
   if(ret != SUCCESS) {
     return ret;
   }
@@ -314,5 +243,4 @@ int BlockBuffer::getBlockNum() {
     return E_DISKFULL;
   }
   return this->blockNum;
->>>>>>> Stashed changes
 }
