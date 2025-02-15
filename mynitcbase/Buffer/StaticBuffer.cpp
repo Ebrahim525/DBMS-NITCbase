@@ -16,6 +16,18 @@ StaticBuffer::StaticBuffer() {
         }
     }
 
+    unsigned char buffer[BLOCK_SIZE];
+
+    int slot = 0;
+    for(int i=0; i<BLOCK_ALLOCATION_MAP_SIZE; i++) {
+        Disk::readBlock(buffer, i);
+
+        for(int j=0; j<BLOCK_SIZE; j++) {
+            StaticBuffer::blockAllocMap[slot] = buffer[j];
+            slot++;
+        }
+    }
+
     for(int bufferIndex=0; bufferIndex<BUFFER_CAPACITY; bufferIndex++) {
         metainfo[bufferIndex].free = true;
         metainfo[bufferIndex].dirty = false;
@@ -25,12 +37,23 @@ StaticBuffer::StaticBuffer() {
 }
 
 StaticBuffer::~StaticBuffer() {
+<<<<<<< Updated upstream
     int k = 0;
     unsigned char buffer[BLOCK_SIZE];
     for(int i=0; i<4; i++) {
         for(int j=0; j<BLOCK_SIZE; j++) {
             buffer[j] = StaticBuffer::blockAllocMap[k];
             k++;
+=======
+
+    unsigned char buffer[BLOCK_SIZE];
+
+    int slot = 0;
+    for(int i=0; i<BLOCK_ALLOCATION_MAP_SIZE; i++) {
+        for(int j=0; j<BLOCK_SIZE; j++) {
+            buffer[j] = StaticBuffer::blockAllocMap[slot];
+            slot++;
+>>>>>>> Stashed changes
         }
 
         Disk::writeBlock(buffer, i);

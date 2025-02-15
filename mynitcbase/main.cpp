@@ -21,8 +21,8 @@ void stage1() {
 }
 
 void ex1() {
-   unsigned char buffer3[BLOCK_SIZE];
-  Disk::readBlock(buffer3, 0);
+  unsigned char buffer3[BLOCK_SIZE];
+  Disk::readBlock(buffer3, 2);
   for(int i=0; i<BLOCK_SIZE; i++)
     printf("%u ", buffer3[i]);
   std::cout << "\n";

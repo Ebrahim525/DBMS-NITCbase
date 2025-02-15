@@ -4,11 +4,28 @@
 #include <cstdlib>
 #include <cstring>
 
+unsigned char StaticBuffer::blockAllocMap[DISK_BLOCKS];
+
 
 BlockBuffer::BlockBuffer(int blockNum) {
   
   this->blockNum=blockNum;
 }
+
+BlockBuffer::BlockBuffer(char blockType) {
+
+  int blocktype = REC;
+  int blockNum = BlockBuffer::getFreeBlock(blocktype);
+  /*if(blockNum > 0 && blockNum < DISK_BLOCKS) {
+    this->blockNum = blockNum;
+  }*/
+  this->blockNum = blockNum;
+  unsigned char *bufferPtr;
+  int ret = loadBlockAndGetBufferPtr(&bufferPtr);
+}
+
+RecBuffer::RecBuffer(int blockNum) : BlockBuffer(blockNum) {}
+RecBuffer::RecBuffer() : BlockBuffer('R'){}
 
 
 int BlockBuffer::getHeader(struct HeadInfo *head) {
@@ -105,11 +122,14 @@ int RecBuffer::setRecord(union Attribute *rec, int slotNum) {
    return SUCCESS;
 }
 
+<<<<<<< Updated upstream
 
 RecBuffer::RecBuffer(int blockNum) : BlockBuffer::BlockBuffer(blockNum) {}
 
 RecBuffer::RecBuffer() : BlockBuffer('R'){}
 
+=======
+>>>>>>> Stashed changes
 int RecBuffer::getSlotMap(unsigned char *slotMap) {
   unsigned char *bufferPtr;
 
@@ -131,7 +151,13 @@ int RecBuffer::getSlotMap(unsigned char *slotMap) {
 }
 
 int compareAttrs(union Attribute attr1, union Attribute attr2, int attrType) {
+<<<<<<< Updated upstream
   return attrType == NUMBER ? (attr1.nVal < attr2.nVal ? -1 : (attr1.nVal > attr2.nVal ? 1 : 0)) : strcmp(attr1.sVal, attr2.sVal) ;
+=======
+  return attrType == NUMBER ? 
+		(attr1.nVal < attr2.nVal ? -1 : (attr1.nVal > attr2.nVal ? 1 : 0)) : 
+		strcmp(attr1.sVal, attr2.sVal) ;
+>>>>>>> Stashed changes
 }
 
 int BlockBuffer::setHeader(struct HeadInfo *head) {
@@ -142,6 +168,7 @@ int BlockBuffer::setHeader(struct HeadInfo *head) {
   }
 
   struct HeadInfo *bufferHeader = (struct HeadInfo *)bufferPtr;
+<<<<<<< Updated upstream
   bufferHeader->numSlots = head->numSlots;
   bufferHeader->lblock = head->lblock;
   bufferHeader->numEntries = head->numEntries;
@@ -152,6 +179,17 @@ int BlockBuffer::setHeader(struct HeadInfo *head) {
 
   ret = StaticBuffer::setDirtyBit(this->blockNum);
 
+=======
+  bufferHeader->blockType, head->blockType;
+  bufferHeader->pblock, head->pblock;
+  bufferHeader->lblock, head->lblock;
+  bufferHeader->rblock, head->rblock;
+  bufferHeader->numEntries, head->numEntries;
+  bufferHeader->numAttrs, head->numAttrs;
+  bufferHeader->numSlots, head->numSlots;
+
+  ret = StaticBuffer::setDirtyBit(this->blockNum);
+>>>>>>> Stashed changes
   return ret;
 }
 
@@ -163,14 +201,21 @@ int BlockBuffer::setBlockType(int blockType) {
   }
 
   *((int32_t *)bufferPtr) = blockType;
+<<<<<<< Updated upstream
   StaticBuffer::blockAllocMap[this->blockNum] = blockType;
 
   ret = StaticBuffer::setDirtyBit(this->blockNum);
 
+=======
+
+  StaticBuffer::blockAllocMap[this->blockNum] = blockType;
+  ret = StaticBuffer::setDirtyBit(this->blockNum);
+>>>>>>> Stashed changes
   return ret;
 }
 
 int BlockBuffer::getFreeBlock(int blockType) {
+<<<<<<< Updated upstream
   int i = 0;
   for(i; i<DISK_BLOCKS; i++) {
     if(StaticBuffer::blockAllocMap[i] == FREE) {
@@ -184,6 +229,21 @@ int BlockBuffer::getFreeBlock(int blockType) {
 
   this->blockNum = i;
   StaticBuffer::getFreeBuffer(this->blockNum);
+=======
+  int blockNum=-1;
+  for(int i=0; i<DISK_BLOCKS; i++) {
+    if(StaticBuffer::blockAllocMap[i] == 3) {
+      blockNum = i;
+      break;
+    }
+  }
+  if(blockNum == -1) {
+    return E_DISKFULL;
+  }
+  this->blockNum = blockNum;
+
+  int bufferNum = StaticBuffer::getFreeBuffer(blockNum);
+>>>>>>> Stashed changes
 
   struct HeadInfo head;
   head.pblock = -1;
@@ -193,6 +253,7 @@ int BlockBuffer::getFreeBlock(int blockType) {
   head.numAttrs = 0;
   head.numSlots = 0;
   int ret = BlockBuffer::setHeader(&head);
+<<<<<<< Updated upstream
 
   BlockBuffer::setBlockType(blockType);
 
@@ -217,4 +278,41 @@ BlockBuffer::BlockBuffer(char blockType) {
   if(blockNum >= 0 || blockNum < DISK_BLOCKS) {
     this->blockNum = blockNum;
   }
+=======
+  if(ret != SUCCESS) {
+    return ret;
+  }
+  ret = BlockBuffer::setBlockType(blockType);
+  if(ret != SUCCESS) {
+    return ret;
+  }
+
+  return blockNum;
+}
+
+int RecBuffer::setSlotMap(unsigned char *slotMap) {
+  unsigned char *bufferPtr;
+  int ret = loadBlockAndGetBufferPtr(&bufferPtr);
+  if(ret != SUCCESS) {
+    return ret;
+  }
+
+  struct HeadInfo head;
+  this->getHeader(&head);
+
+  int numSlots = head.numSlots;
+
+  memcpy(bufferPtr + HEADER_SIZE, slotMap, numSlots);
+
+  ret = StaticBuffer::setDirtyBit(this->blockNum);
+
+  return ret;
+}
+
+int BlockBuffer::getBlockNum() {
+  if(this->blockNum < 0 || this->blockNum >= DISK_BLOCKS) {
+    return E_DISKFULL;
+  }
+  return this->blockNum;
+>>>>>>> Stashed changes
 }
