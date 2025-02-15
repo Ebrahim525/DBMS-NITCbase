@@ -6,28 +6,7 @@
 #include "Disk_Class/Disk.h"
 #include "FrontendInterface/FrontendInterface.h"
 #include "define/constants.h"
-
 #include <stdlib.h>
-
-void stage1() {
-  unsigned char buffer[BLOCK_SIZE];
-  Disk::readBlock(buffer, 7000);
-  char message[] = "hello";
-  memcpy(buffer + 20, message, 6);
-  Disk::writeBlock(buffer, 7000);
-  char message2[6];
-  Disk::readBlock(buffer, 7000);
-  memcpy(message2, buffer + 20, 6);
-  std::cout << message2;
-}
-
-void ex1() {
-   unsigned char buffer3[BLOCK_SIZE];
-  Disk::readBlock(buffer3, 0);
-  for(int i=0; i<BLOCK_SIZE; i++)
-    printf("%u ", buffer3[i]);
-  std::cout << "\n";
-}
 
 void stage2() {
   RecBuffer relCatBuffer(RELCAT_BLOCK);
@@ -39,9 +18,6 @@ void stage2() {
   relCatBuffer.getHeader(&relCatHeader);
   attrCatBuffer.getHeader(&attrCatHeader);
 
-
-
-  
   //Exercise 1
 
   for(int i=0; i<attrCatHeader.numEntries; i++)
@@ -84,32 +60,9 @@ void stage2() {
  }
 }
 
-void stage3() {
-  for (int i=0; i<3; i++) {
-    RelCatEntry relCatEntry;
-    RelCacheTable::getRelCatEntry(i, &relCatEntry);
-    printf("Relation: %s\n", relCatEntry.relName);
-    for(int j=0; j<relCatEntry.numAttrs; j++){
-      AttrCatEntry attrCatEntry;
-      AttrCacheTable::getAttrCatEntry(i, j, &attrCatEntry);
-      char attrType[4];
-
-      if(attrCatEntry.attrType==0){
-        strcpy(attrType, "NUM");
-      }
-      else{
-        strcpy(attrType, "STR");
-      }
-      printf("  %s: %s\n", attrCatEntry.attrName, attrType);
-       
-    }
-  }
-}
-
 int main(int argc, char *argv[]) {
   Disk disk_run;
-  StaticBuffer buffer;
-  OpenRelTable cache;
 
-  return FrontendInterface::handleFrontend(argc, argv);
+  stage2();
+  return 0;
 }
