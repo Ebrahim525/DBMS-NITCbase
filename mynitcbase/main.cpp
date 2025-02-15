@@ -6,7 +6,6 @@
 #include "Disk_Class/Disk.h"
 #include "FrontendInterface/FrontendInterface.h"
 #include "define/constants.h"
-
 #include <stdlib.h>
 
 void stage1() {
@@ -30,7 +29,9 @@ void ex1() {
 }
 int main(int argc, char *argv[]) {
   Disk disk_run;
+  
   stage1();
   ex1();
+  
   return 0;
 }
