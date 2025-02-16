@@ -93,28 +93,46 @@ OpenRelTable::~OpenRelTable() {
   if(RelCacheTable::relCache[ATTRCAT_RELID]->dirty == true) {
     RelCatEntry attrCatBuf;
     RelCacheTable::getRelCatEntry(ATTRCAT_RELID, &attrCatBuf);
-    Attribute recordRelCat[RELCAT_NO_ATTRS];
-    RelCacheTable::relCatEntryToRecord(&attrCatBuf, recordRelCat);
+    Attribute record[RELCAT_NO_ATTRS];
+    RelCacheTable::relCatEntryToRecord(&attrCatBuf, record);
 
     RecBuffer relCatBlock(RelCacheTable::relCache[ATTRCAT_RELID]->recId.block);
-    relCatBlock.setRecord(recordRelCat, RelCacheTable::relCache[ATTRCAT_RELID]->recId.slot);
+    relCatBlock.setRecord(record, RelCacheTable::relCache[ATTRCAT_RELID]->recId.slot);
   }
   free(RelCacheTable::relCache[ATTRCAT_RELID]);
 
   if(RelCacheTable::relCache[RELCAT_RELID]->dirty == true) {
     RelCatEntry relcatBuf;
-  }
+    RelCacheTable::getRelCatEntry(RELCAT_RELID, &relcatBuf);
+    Attribute record[RELCAT_NO_ATTRS];
+    RelCacheTable::relCatEntryToRecord(&relcatBuf, record);
 
-  /*for (int i=0; i<MAX_OPEN; i++) {
-    free(RelCacheTable::relCache[i]);
+    RecBuffer relCatBlock(RelCacheTable::relCache[RELCAT_RELID]->recId.block);
+    relCatBlock.setRecord(record, RelCacheTable::relCache[RELCAT_RELID]->recId.slot);
+  }
+  free(RelCacheTable::relCache[RELCAT_RELID]);
+
+  for (int i=0; i<2; i++) {
     AttrCacheEntry *head = AttrCacheTable::attrCache[i];
     AttrCacheEntry *x;
-    while(head != nullptr){
+
+    int count = 0;
+    while(head != nullptr) {
       x = head;
-      head = head->next;
-      free(x);
+      head= head->next;
+      count++;
+       if(x->dirty == true) {
+        AttrCatEntry attrCatBuf;
+        AttrCacheTable::getAttrCatEntry(i, count, &attrCatBuf);
+        Attribute record[ATTRCAT_NO_ATTRS];
+        AttrCacheTable::attrCatEntryToRecord(&attrCatBuf, record);
+
+        RecBuffer attrCatBlock(AttrCacheTable::attrCache[i]->recId.block);
+        attrCatBlock.setRecord(record, AttrCacheTable::attrCache[i]->recId.slot);
+       }
+       free(x);
     }
-  }*/
+  }
 }
 
 int OpenRelTable::getRelId(char relName[ATTR_SIZE]) {
