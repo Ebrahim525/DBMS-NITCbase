@@ -239,3 +239,18 @@ int BlockBuffer::getBlockNum() {
   }
   return this->blockNum;
 }
+
+void BlockBuffer::releaseBlock() {
+  if(this->blockNum == -1 || StaticBuffer::blockAllocMap[this->blockNum] == UNUSED_BLK) {
+    return;
+  }
+
+  int bufferNum = StaticBuffer::getBufferNum(this->blockNum);
+  if(bufferNum == E_BLOCKNOTINBUFFER) {
+    return;
+  }
+
+  StaticBuffer::metainfo->free = true;
+  StaticBuffer::blockAllocMap[this->blockNum] = UNUSED_BLK;
+  this->blockNum = INVALID_BLOCKNUM;
+}

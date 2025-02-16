@@ -2,6 +2,9 @@
     "files.associations": {
         "chrono": "cpp",
         "*.def": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "format": "cpp",
+        "optional": "cpp",
+        "sstream": "cpp"
     }
 }
