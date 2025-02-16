@@ -89,8 +89,23 @@ OpenRelTable::~OpenRelTable() {
       OpenRelTable::closeRel(i);
     }
   }
-  //Freeing all the memory allocated in OpenRelTable()
-  for (int i=0; i<MAX_OPEN; i++) {
+
+  if(RelCacheTable::relCache[ATTRCAT_RELID]->dirty == true) {
+    RelCatEntry attrCatBuf;
+    RelCacheTable::getRelCatEntry(ATTRCAT_RELID, &attrCatBuf);
+    Attribute recordRelCat[RELCAT_NO_ATTRS];
+    RelCacheTable::relCatEntryToRecord(&attrCatBuf, recordRelCat);
+
+    RecBuffer relCatBlock(RelCacheTable::relCache[ATTRCAT_RELID]->recId.block);
+    relCatBlock.setRecord(recordRelCat, RelCacheTable::relCache[ATTRCAT_RELID]->recId.slot);
+  }
+  free(RelCacheTable::relCache[ATTRCAT_RELID]);
+
+  if(RelCacheTable::relCache[RELCAT_RELID]->dirty == true) {
+    RelCatEntry relcatBuf;
+  }
+
+  /*for (int i=0; i<MAX_OPEN; i++) {
     free(RelCacheTable::relCache[i]);
     AttrCacheEntry *head = AttrCacheTable::attrCache[i];
     AttrCacheEntry *x;
@@ -99,7 +114,7 @@ OpenRelTable::~OpenRelTable() {
       head = head->next;
       free(x);
     }
-  }
+  }*/
 }
 
 int OpenRelTable::getRelId(char relName[ATTR_SIZE]) {
