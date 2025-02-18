@@ -73,7 +73,7 @@ int Schema::createRel(char relName[], int nAttrs, char attrs[][ATTR_SIZE], int a
     }
 
     for(int i=0; i<nAttrs-1; i++) {
-        for(int j=1; j<nAttrs; j++){
+        for(int j=i+1; j<nAttrs; j++){
             if(strcmp(attrs[i], attrs[j]) == 0) {
                 return E_DUPLICATEATTR;
             }
@@ -118,11 +118,16 @@ int Schema::deleteRel(char *relName) {
     }
 
     int relId = OpenRelTable::getRelId(relName);
-    if(relId != E_RELNOTOPEN) {
+    if(relId > 0 && relId < MAX_OPEN) {
         return E_RELOPEN;
     }
 
-    int ret = BlockAccess::deleteRelation(relName);
+    // if(relId < 0 || relId >= MAX_OPEN) {
+    //     return E_RELNOTOPEN;
+    // }
 
-    return ret;
+    //int ret = BlockAccess::deleteRelation(relName);
+
+    //return ret;
+    return 0;
 }
