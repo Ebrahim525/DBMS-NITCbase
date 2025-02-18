@@ -104,7 +104,7 @@ OpenRelTable::~OpenRelTable() {
 
 int OpenRelTable::getRelId(char relName[ATTR_SIZE]) {
   for(int i=0; i<MAX_OPEN; i++) {
-    if(strcmp(tableMetaInfo[i].relName, relName) == 0) {
+    if(strcmp(tableMetaInfo[i].relName, relName) == 0 && tableMetaInfo[i].free == false) {
       return i;
     }
   }
