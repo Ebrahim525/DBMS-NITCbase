@@ -5,6 +5,12 @@
         "*.inc": "cpp",
         "format": "cpp",
         "optional": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "bitset": "cpp",
+        "cstdlib": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "text_encoding": "cpp",
+        "regex": "cpp"
     }
 }
