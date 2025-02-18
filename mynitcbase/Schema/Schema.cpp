@@ -118,16 +118,11 @@ int Schema::deleteRel(char *relName) {
     }
 
     int relId = OpenRelTable::getRelId(relName);
-    if(relId > 0 && relId < MAX_OPEN) {
+    if(relId != E_RELNOTOPEN) {
         return E_RELOPEN;
     }
 
-    // if(relId < 0 || relId >= MAX_OPEN) {
-    //     return E_RELNOTOPEN;
-    // }
+    int ret = BlockAccess::deleteRelation(relName);
 
-    //int ret = BlockAccess::deleteRelation(relName);
-
-    //return ret;
-    return 0;
+    return ret;
 }

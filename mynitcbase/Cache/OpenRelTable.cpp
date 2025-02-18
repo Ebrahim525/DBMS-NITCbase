@@ -1,9 +1,7 @@
 #include "OpenRelTable.h"
 #include <stdlib.h>
 #include <cstring>
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 OpenRelTableMetaInfo OpenRelTable::tableMetaInfo[MAX_OPEN];
 
@@ -43,7 +41,8 @@ OpenRelTable::OpenRelTable() {
       RelCacheTable::recordToRelCatEntry(relCatRecord, &relCacheEntry.relCatEntry);
       relCacheEntry.recId.block = RELCAT_BLOCK;
       relCacheEntry.recId.slot = i;
-
+      relCacheEntry.searchIndex.block = -1;
+      relCacheEntry.searchIndex.slot = -1;
 
       RelCacheTable::relCache[i] = (struct RelCacheEntry*)malloc(sizeof(RelCacheEntry));
       *(RelCacheTable::relCache[i]) = relCacheEntry;
@@ -137,7 +136,7 @@ OpenRelTable::~OpenRelTable() {
 
 int OpenRelTable::getRelId(char relName[ATTR_SIZE]) {
   for(int i=0; i<MAX_OPEN; i++) {
-    if(strcmp(tableMetaInfo[i].relName, relName) == 0) {
+    if(strcmp(tableMetaInfo[i].relName, relName) == 0 && tableMetaInfo[i].free == false) {
       return i;
     }
   }
@@ -242,7 +241,6 @@ int OpenRelTable::closeRel(int relId) {
   free(RelCacheTable::relCache[relId]);
 
   tableMetaInfo[relId].free = true;
-  RelCacheTable::relCache[relId] = nullptr;
   AttrCacheEntry *head = AttrCacheTable::attrCache[relId];
   AttrCacheEntry *x = head;
   while(head!=nullptr) {
